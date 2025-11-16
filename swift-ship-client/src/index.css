@@ -5,6 +5,9 @@
 
 @theme inline {
   --default-font-family: var(--font-urbanist), var(--font-sans);
+
+  --color-gray: #606060;
+  --color-dark: #1f1f1f;
 }
 
 @plugin "daisyui" {

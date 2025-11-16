@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+:root {
+  --font-urbanist: 'Urbanist', sans-serif;
+}
+
+@theme inline {
+  --default-font-family: var(--font-urbanist), var(--font-sans);
+}
+
+@plugin "daisyui" {
+  themes: light --default;
+}
+
+@plugin "daisyui/theme" {
+  name: 'light';
+  default: true;
+  --color-primary: #caeb66;
+  --color-secondary: #03373d;
+}

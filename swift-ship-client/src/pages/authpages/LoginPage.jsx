@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { Link } from 'react-router';
+import GoogleLogin from './GoogleLogin';
 
 export default function LoginPage() {
   const {
@@ -21,31 +22,40 @@ export default function LoginPage() {
     <div className='card py-10 max-w-md mx-auto md:m-0'>
       <h2 className='heading-secondary '>Welcome Back</h2>
       <p className='ml-2 text-dark'>Login with SwiftShip</p>
-      <form className='card-body px-0' onSubmit={handleSubmit(handleLogin)}>
+      <form
+        className='card-body px-0 pb-1'
+        onSubmit={handleSubmit(handleLogin)}>
         <fieldset className='fieldset'>
           {/* Email */}
-          <label className='label'>Email</label>
+          <label htmlFor='email' className='label'>
+            Email
+          </label>
           <input
             type='email'
             {...register('email', { required: true })}
             className='input w-full'
             placeholder='Email'
+            id='email'
           />
           {errors.email?.type === 'required' && (
             <span className='text-red-400'>Email is required!</span>
           )}
           {/* Password */}
-          <label className='label'>Password</label>
+          <label htmlFor='pass' className='label'>
+            Password
+          </label>
           <div className='relative'>
             <input
               type={showPassword ? 'text' : 'password'}
               {...register('password', {
                 required: true,
                 minLength: 6,
-                pattern: /^(?=.*[a-z])(?=.*[A-Z]).+$/,
+                pattern:
+                  /^(?=.*[a-z])(?=.*[A-Z]).(?=.*\d).(?=.*[^A-Za-z0-9]).+$/,
               })}
               className='input w-full '
               placeholder='Password'
+              id='pass'
             />
 
             {password.length > 0 && (
@@ -68,8 +78,8 @@ export default function LoginPage() {
           )}
           {errors.password?.type === 'pattern' && (
             <span className='text-red-400'>
-              Password must contain at least one uppercase and one lowercase
-              letter!
+              Password must contain at least one uppercase, one lowercase
+              letter, one digit and one special characters!
             </span>
           )}
           {/* Forget Password */}
@@ -91,6 +101,8 @@ export default function LoginPage() {
         </Link>
       </p>
       <div className='text-center my-4'>Or</div>
+      {/* Google Login */}
+      <GoogleLogin title='Login with Google' />
     </div>
   );
 }

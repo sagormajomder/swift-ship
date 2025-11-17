@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 import GoogleLogin from './GoogleLogin';
 
@@ -10,6 +10,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { signInUser, setIsLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const {
     register,
@@ -27,7 +28,7 @@ export default function LoginPage() {
     signInUser(email, password)
       .then(userCreditial => {
         toast.success('user log in successfully!');
-        navigate('/');
+        navigate(location.state ?? '/');
       })
       .catch(error => {
         const errorCode = error.code;

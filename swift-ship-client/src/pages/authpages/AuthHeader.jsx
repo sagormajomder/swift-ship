@@ -3,7 +3,7 @@ import MyContainer from '../../components/MyContainer';
 
 export default function AuthHeader() {
   return (
-    <header>
+    <header className='pl-4'>
       <Logo />
     </header>
   );

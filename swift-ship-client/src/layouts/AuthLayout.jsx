@@ -8,10 +8,10 @@ import AuthImage from '../pages/authpages/AuthImage';
 
 export default function AuthLayout() {
   return (
-    <MyBody style='py-6'>
-      <MyContainer>
+    <MyBody style='py-6 bg-white'>
+      <MyContainer style='h-[94dvh] w-full'>
         <AuthHeader />
-        <Main style='flex justify-between items-center'>
+        <Main style='flex justify-between items-center h-full '>
           <AuthContent>
             <Outlet />
           </AuthContent>

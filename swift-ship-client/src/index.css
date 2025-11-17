@@ -20,3 +20,7 @@
   --color-primary: #caeb66;
   --color-secondary: #03373d;
 }
+
+@utility heading-secondary {
+  @apply text-5xl font-bold mb-2 text-black;
+}

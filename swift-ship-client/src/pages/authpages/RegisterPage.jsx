@@ -30,7 +30,7 @@ export default function LoginPage() {
     registerUser(email, password)
       .then(userCredential => {
         console.log(userCredential);
-
+        toast.success('User registration successful.');
         navigate('/');
       })
       .catch(error => {

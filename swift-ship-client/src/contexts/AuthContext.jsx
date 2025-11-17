@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
 } from '@firebase/auth';
 import { createContext, use, useEffect, useState } from 'react';
 import auth from './../firebase/firebase.config';
@@ -13,8 +14,16 @@ function AuthProvider({ children }) {
 
   console.log(user);
 
+  // User Register
   function registerUser(email, password) {
+    setIsLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
+  }
+
+  // User Signin
+  function signInUser(email, password) {
+    setIsLoading(true);
+    return signInWithEmailAndPassword(auth, email, password);
   }
 
   // Auth Observer
@@ -33,7 +42,14 @@ function AuthProvider({ children }) {
 
   return (
     <AuthContext
-      value={{ registerUser, isLoading, setIsLoading, user, setUser }}>
+      value={{
+        registerUser,
+        signInUser,
+        isLoading,
+        setIsLoading,
+        user,
+        setUser,
+      }}>
       {children}
     </AuthContext>
   );

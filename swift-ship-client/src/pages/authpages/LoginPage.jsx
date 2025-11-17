@@ -1,22 +1,64 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useAuth } from '../../contexts/AuthContext';
 import GoogleLogin from './GoogleLogin';
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
+  const { signInUser, setIsLoading } = useAuth();
+  const navigate = useNavigate();
+
+  const password = watch('password', '');
+
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-  const [showPassword, setShowPassword] = useState(false);
-  function handleLogin(data) {
-    console.log(data);
-  }
 
-  const password = watch('password', '');
+  // User Login
+  function handleLogin(data) {
+    // console.log(data);
+    const { email, password } = data;
+
+    signInUser(email, password)
+      .then(userCreditial => {
+        toast.success('user log in successfully!');
+        navigate('/');
+      })
+      .catch(error => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // console.log(errorCode);
+        // console.log(errorMessage);
+        if (errorCode === 'auth/invalid-email') {
+          toast.error('Invalid email format. Please check your email.');
+        } else if (errorCode === 'auth/invalid-credential') {
+          toast.error(
+            'User not found. Please enter correct email and password'
+          );
+        } else if (errorCode === 'auth/user-not-found') {
+          toast.error('User not found. Please sign up first.');
+        } else if (errorCode === 'auth/wrong-password') {
+          toast.error('Wrong password. Please try again.');
+        } else if (errorCode === 'auth/user-disabled') {
+          toast.error('This user account has been disabled.');
+        } else if (errorCode === 'auth/too-many-requests') {
+          toast.error('Too many attempts. Please try again later.');
+        } else if (errorCode === 'auth/network-request-failed') {
+          toast.error('Network error. Please check your connection.');
+        } else {
+          toast.error(errorMessage || 'An unexpected error occurred.');
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
 
   return (
     <div className='card py-10 max-w-md mx-auto md:m-0'>

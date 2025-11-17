@@ -1,12 +1,19 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { Link } from 'react-router';
-import GoogleLogin from './GoogleLogin';
+import { Link, useNavigate } from 'react-router';
+import { useAuth } from '../../contexts/AuthContext';
 
 import imageUploadIcon from '../../assets/image-upload-icon.png';
+import GoogleLogin from './GoogleLogin';
 
 export default function LoginPage() {
+  const [showPassword, setShowPassword] = useState(false);
+  const { registerUser, setIsLoading } = useAuth();
+
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -14,13 +21,41 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm();
 
-  const [showPassword, setShowPassword] = useState(false);
+  const password = watch('password', '');
 
   function handleRegister(data) {
-    console.log(data);
-  }
+    // console.log(data);
+    const { displayName, email, password } = data;
 
-  const password = watch('password', '');
+    registerUser(email, password)
+      .then(userCredential => {
+        console.log(userCredential);
+
+        navigate('/');
+      })
+      .catch(error => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // console.log(errorCode);
+        // console.log(errorMessage);
+        if (errorCode === 'auth/email-already-in-use') {
+          toast.error('User already exists in the database. Try another email');
+        } else if (errorCode === 'auth/weak-password') {
+          toast.error('Enter at least 6 digit password');
+        } else if (errorCode === 'auth/invalid-email') {
+          toast.error('Invalid email format. Please check your email address.');
+        } else if (errorCode === 'auth/user-disabled') {
+          toast.error('This user account has been disabled.');
+        } else if (errorCode === 'auth/too-many-requests') {
+          toast.error('Too many attempts. Please try again later.');
+        } else if (errorCode === 'auth/network-request-failed') {
+          toast.error('Network error. Please check your connection.');
+        } else {
+          toast.error(errorMessage || 'An unexpected error occurred.');
+        }
+      })
+      .finally(() => setIsLoading(false));
+  }
 
   return (
     <div className='card py-10 max-w-md mx-auto md:m-0'>
@@ -38,6 +73,7 @@ export default function LoginPage() {
               <input
                 className=' file-input hidden'
                 type='file'
+                {...register('photoURL')}
                 name=''
                 id='image'
               />
@@ -49,7 +85,7 @@ export default function LoginPage() {
           </label>
           <input
             type='text'
-            {...register('name', { required: true })}
+            {...register('displayName', { required: true })}
             className='input w-full'
             placeholder='Name'
             id='name'

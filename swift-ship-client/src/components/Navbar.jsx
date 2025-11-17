@@ -66,11 +66,15 @@ export default function Navbar() {
           </div>
           {/* END */}
           <div className='navbar-end gap-2'>
-            <Link className='btn btn-outline font-semibold text-body border-gray-300'>
+            <Link
+              to='/auth/login'
+              className='btn btn-outline font-semibold text-body border-gray-300'>
               Sign In
             </Link>
             <div className='flex items-center'>
-              <Link className='btn btn-primary font-bold text-dark border-none'>
+              <Link
+                to='/auth/register'
+                className='btn btn-primary font-bold text-dark border-none'>
                 Sign Up
               </Link>
               <img className='h-10' src={goImage} alt='' />

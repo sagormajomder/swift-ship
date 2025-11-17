@@ -1,9 +1,12 @@
+import toast from 'react-hot-toast';
 import { Link, NavLink } from 'react-router';
 import goImage from '../assets/go.png';
+import { useAuth } from '../contexts/AuthContext';
 import Logo from './Logo';
 import MyContainer from './MyContainer';
 
 export default function Navbar() {
+  const { user, signOutUser, setUser } = useAuth();
   const links = (
     <>
       <li>
@@ -26,6 +29,18 @@ export default function Navbar() {
       </li>
     </>
   );
+
+  function handleLogOut() {
+    signOutUser()
+      .then(() => {
+        toast.success('User logout successful');
+        setUser(null);
+      })
+      .catch(error => {
+        console.log(error);
+        toast.error(error.message);
+      });
+  }
   return (
     <header className=''>
       <MyContainer>
@@ -66,19 +81,30 @@ export default function Navbar() {
           </div>
           {/* END */}
           <div className='navbar-end gap-2'>
-            <Link
-              to='/auth/login'
-              className='btn btn-outline font-semibold text-body border-gray-300'>
-              Sign In
-            </Link>
-            <div className='flex items-center'>
-              <Link
-                to='/auth/register'
+            {!user && (
+              <>
+                <Link
+                  to='/auth/login'
+                  className='btn btn-outline font-semibold text-body border-gray-300'>
+                  Sign In
+                </Link>
+                <div className='flex items-center'>
+                  <Link
+                    to='/auth/register'
+                    className='btn btn-primary font-bold text-dark border-none'>
+                    Sign Up
+                  </Link>
+                  <img className='h-10' src={goImage} alt='' />
+                </div>
+              </>
+            )}
+            {user && (
+              <button
+                onClick={handleLogOut}
                 className='btn btn-primary font-bold text-dark border-none'>
-                Sign Up
-              </Link>
-              <img className='h-10' src={goImage} alt='' />
-            </div>
+                LogOut
+              </button>
+            )}
           </div>
         </nav>
       </MyContainer>

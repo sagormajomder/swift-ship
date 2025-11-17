@@ -11,14 +11,13 @@ export default function LoginPage() {
   const { signInUser, setIsLoading } = useAuth();
   const navigate = useNavigate();
 
-  const password = watch('password', '');
-
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
+  const password = watch('password', '');
 
   // User Login
   function handleLogin(data) {

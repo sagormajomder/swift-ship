@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router';
 import goImage from '../assets/go.png';
+import Logo from './Logo';
 import MyContainer from './MyContainer';
 
 export default function Navbar() {
@@ -57,9 +58,7 @@ export default function Navbar() {
                 {links}
               </ul>
             </div>
-            <Link to='/' className=' text-xl font-bold text-[#303030]'>
-              SwiftShip
-            </Link>
+            <Logo />
           </div>
           {/* CENTER */}
           <div className='navbar-center hidden lg:flex'>

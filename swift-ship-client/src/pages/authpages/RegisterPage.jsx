@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import imageUploadIcon from '../../assets/image-upload-icon.png';
 import GoogleLogin from './GoogleLogin';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const { registerUser, setIsLoading } = useAuth();
+  const [photoPreview, setPhotoPreview] = useState(imageUploadIcon);
+  const { registerUser, updateUserProfile, setIsLoading } = useAuth();
 
   const navigate = useNavigate();
 
@@ -21,17 +23,60 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm();
 
-  const password = watch('password', '');
+  const watchedPassword = watch('password', '');
+  const watchedPhoto = watch('photo');
+
+  useEffect(
+    function () {
+      if (watchedPhoto && watchedPhoto.length > 0) {
+        const photoFile = watchedPhoto[0];
+        const photoUrl = URL.createObjectURL(photoFile);
+        setPhotoPreview(photoUrl);
+        return () => URL.revokeObjectURL(photoUrl);
+      } else {
+        setPhotoPreview(imageUploadIcon);
+      }
+    },
+    [watchedPhoto]
+  );
 
   function handleRegister(data) {
-    // console.log(data);
-    const { displayName, email, password } = data;
+    const { photo, displayName, email, password } = data;
+    const imageFile = photo[0];
 
     registerUser(email, password)
       .then(userCredential => {
-        console.log(userCredential);
-        toast.success('User registration successful.');
-        navigate('/');
+        // console.log(userCredential);
+
+        // 1. Store the image into the form data
+        const formData = new FormData();
+        formData.append('image', imageFile);
+
+        // 2. send photo to the host to get the url
+        axios
+          .post(
+            `https://api.imgbb.com/1/upload?key=${
+              import.meta.env.VITE_IMGBB_HOST_KEY
+            }`,
+            formData
+          )
+          .then(result => {
+            console.log(result);
+            console.log(result.data.data.url);
+            //3. Update User profile
+            updateUserProfile({
+              displayName,
+              photoURL: result.data.data.url,
+            })
+              .then(() => {
+                toast.success('User registration successful.');
+                navigate('/');
+              })
+              .catch(error => {
+                // console.log(error);
+                toast.error(error.message);
+              });
+          });
       })
       .catch(error => {
         const errorCode = error.code;
@@ -66,19 +111,26 @@ export default function LoginPage() {
         className='card-body px-0 pb-1'
         onSubmit={handleSubmit(handleRegister)}>
         <fieldset className='fieldset'>
-          {/* Phone Upload */}
+          {/* Photo Upload */}
           <div>
             <label htmlFor='image' className='label'>
-              <img src={imageUploadIcon} alt='' />
-              <input
-                className=' file-input hidden'
-                type='file'
-                {...register('photoURL')}
-                name=''
-                id='image'
+              <img
+                className='object-cover w-15 h-15 rounded-full'
+                src={photoPreview}
+                alt=''
               />
             </label>
+            <input
+              className='file-input hidden'
+              type='file'
+              {...register('photo', { required: true })}
+              id='image'
+            />
           </div>
+          {errors.photo?.type === 'required' && (
+            <span className='text-red-400'>Photo is required!</span>
+          )}
+
           {/* Name */}
           <label htmlFor='name' className='label'>
             Name
@@ -90,6 +142,9 @@ export default function LoginPage() {
             placeholder='Name'
             id='name'
           />
+          {errors.displayName?.type === 'required' && (
+            <span className='text-red-400'>Name is required!</span>
+          )}
           {/* Email */}
           <label htmlFor='email' className='label'>
             Email
@@ -122,7 +177,7 @@ export default function LoginPage() {
               id='pass'
             />
 
-            {password.length > 0 && (
+            {watchedPassword.length > 0 && (
               <button
                 type='button'
                 onClick={() => setShowPassword(!showPassword)}

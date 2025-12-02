@@ -94,16 +94,28 @@ export default function Navbar() {
                     className='btn btn-primary font-bold text-dark border-none'>
                     Sign Up
                   </Link>
+
                   <img className='h-10' src={goImage} alt='' />
                 </div>
               </>
             )}
             {user && (
-              <button
-                onClick={handleLogOut}
-                className='btn btn-primary font-bold text-dark border-none'>
-                LogOut
-              </button>
+              <>
+                <button
+                  onClick={handleLogOut}
+                  className='btn btn-primary font-bold text-dark border-none'>
+                  LogOut
+                </button>
+                <div className='flex items-center'>
+                  <Link
+                    to='/be-a-rider'
+                    className='btn btn-primary font-bold text-dark border-none'>
+                    Be a rider
+                  </Link>
+
+                  <img className='h-10' src={goImage} alt='' />
+                </div>
+              </>
             )}
           </div>
         </nav>

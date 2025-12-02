@@ -11,6 +11,7 @@ export default function LoginPage() {
   const { signInUser, setIsLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  // console.log('In Login', location);
 
   const {
     register,
@@ -138,7 +139,10 @@ export default function LoginPage() {
       </form>
       <p>
         Don't have any account?{' '}
-        <Link to='/auth/register' className='text-[#8FA748]'>
+        <Link
+          state={location.state}
+          to='/auth/register'
+          className='text-[#8FA748]'>
           Register
         </Link>
       </p>

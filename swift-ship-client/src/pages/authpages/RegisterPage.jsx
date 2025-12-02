@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
 
 import axios from 'axios';
@@ -15,6 +15,9 @@ export default function LoginPage() {
   const { registerUser, updateUserProfile, setIsLoading } = useAuth();
 
   const navigate = useNavigate();
+
+  const location = useLocation();
+  // console.log('In register', location);
 
   const {
     register,
@@ -30,7 +33,9 @@ export default function LoginPage() {
     function () {
       if (watchedPhoto && watchedPhoto.length > 0) {
         const photoFile = watchedPhoto[0];
+        // console.log(photoFile);
         const photoUrl = URL.createObjectURL(photoFile);
+        // console.log(photoUrl);
         setPhotoPreview(photoUrl);
         return () => URL.revokeObjectURL(photoUrl);
       } else {
@@ -219,7 +224,10 @@ export default function LoginPage() {
       </form>
       <p>
         Already have an account?{' '}
-        <Link to='/auth/login' className='text-[#8FA748]'>
+        <Link
+          to='/auth/login'
+          state={location.state}
+          className='text-[#8FA748]'>
           Login
         </Link>
       </p>

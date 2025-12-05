@@ -2,9 +2,14 @@ import { useForm, useWatch } from 'react-hook-form';
 import { useLoaderData } from 'react-router';
 import Swal from 'sweetalert2';
 import MyContainer from '../components/MyContainer';
+import { useAuth } from '../contexts/AuthContext';
+import useAxiosSecure from './../hooks/useAxiosSecure';
 
 export default function SendParcelPage() {
   const warehousesData = useLoaderData();
+  const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
+
   // console.log(warehousesData);
   const {
     register,
@@ -19,7 +24,7 @@ export default function SendParcelPage() {
   const receiverDistrict = useWatch({ control, name: 'receiverDistrict' });
 
   function handleAddParcel(data) {
-    console.log(data);
+    // console.log(data);
 
     const isDocument = data.parcelType === 'document';
     const isSameDistrict = data.senderDistrict === data.receiverDistrict;
@@ -56,10 +61,9 @@ export default function SendParcelPage() {
     }).then(result => {
       if (result.isConfirmed) {
         // save the parcel info to the database
-        // axiosSecure.post('/parcels', data)
-        //     .then(res => {
-        //         console.log('after saving parcel', res.data);
-        //     })
+        axiosSecure.post('/parcels', data).then(res => {
+          console.log('after saving parcel', res.data);
+        });
         // Swal.fire({
         //     title: "Deleted!",
         //     text: "Your file has been deleted.",
@@ -160,6 +164,7 @@ export default function SendParcelPage() {
                   <input
                     type='text'
                     id='sender-name'
+                    defaultValue={user?.displayName}
                     className='input w-full'
                     placeholder='Sender Name'
                     {...register('senderName', { required: true })}
@@ -172,6 +177,7 @@ export default function SendParcelPage() {
                   <input
                     type='text'
                     id='sender-email'
+                    defaultValue={user?.email}
                     {...register('senderEmail')}
                     className='input w-full'
                     placeholder='Sender Email'

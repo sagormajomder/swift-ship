@@ -10,22 +10,25 @@ export default function Navbar() {
   const links = (
     <>
       <li>
-        <NavLink>Services</NavLink>
+        <NavLink to=''>Services</NavLink>
       </li>
       <li>
-        <NavLink>Coverage</NavLink>
+        <NavLink to=''>About Us</NavLink>
       </li>
       <li>
-        <NavLink>About Us</NavLink>
+        <NavLink to='/send-parcel'>Send Parcel</NavLink>
       </li>
       <li>
-        <NavLink>Pricing</NavLink>
+        <NavLink to=''>Coverage</NavLink>
       </li>
       <li>
-        <NavLink>Blog</NavLink>
+        <NavLink to=''>Pricing</NavLink>
       </li>
       <li>
-        <NavLink>Contact</NavLink>
+        <NavLink to=''>Blog</NavLink>
+      </li>
+      <li>
+        <NavLink to=''>Contact</NavLink>
       </li>
     </>
   );

@@ -21,6 +21,12 @@
   --color-secondary: #03373d;
 }
 
+@utility heading-primary {
+  @apply text-5xl font-bold mb-2 text-secondary;
+}
 @utility heading-secondary {
-  @apply text-5xl font-bold mb-2 text-black;
+  @apply text-4xl font-bold mb-2 text-secondary;
+}
+@utility heading-quaternary {
+  @apply text-2xl font-bold mb-2 text-secondary;
 }

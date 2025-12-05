@@ -109,7 +109,7 @@ export default function LoginPage() {
 
   return (
     <div className='card py-10 max-w-md mx-auto md:m-0'>
-      <h2 className='heading-secondary '>Create an Account</h2>
+      <h1 className='heading-primary '>Create an Account</h1>
       <p className='ml-2 text-dark'>Register with SwiftShip</p>
 
       <form

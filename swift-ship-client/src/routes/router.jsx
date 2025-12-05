@@ -5,6 +5,7 @@ import LoginPage from '../pages/authpages/LoginPage';
 import RegisterPage from '../pages/authpages/RegisterPage';
 import { default as BeARiderPage } from '../pages/BeARiderPage';
 import HomePage from './../pages/homepage/HomePage';
+import SendParcelPage from './../pages/SendParcelPage';
 import PrivateRoute from './PrivateRoute';
 
 const router = createBrowserRouter([
@@ -23,6 +24,16 @@ const router = createBrowserRouter([
             <BeARiderPage />
           </PrivateRoute>
         ),
+      },
+      {
+        path: 'send-parcel',
+        element: (
+          <PrivateRoute>
+            <SendParcelPage />
+          </PrivateRoute>
+        ),
+
+        loader: async () => fetch('../warehouses.json'),
       },
     ],
   },

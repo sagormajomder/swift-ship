@@ -1,4 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
+import { FaRegTrashAlt } from 'react-icons/fa';
+import { FiEdit } from 'react-icons/fi';
+import { HiMagnifyingGlass } from 'react-icons/hi2';
+import Swal from 'sweetalert2';
 import { useAuth } from '../../contexts/AuthContext';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 
@@ -9,6 +13,7 @@ export default function MyParcelsPage() {
     data: parcels = [],
     isPending,
     isError,
+    refetch,
   } = useQuery({
     queryKey: ['myParcels', user?.email],
     queryFn: async () => {
@@ -16,6 +21,38 @@ export default function MyParcelsPage() {
       return res.data;
     },
   });
+
+  function handleParcelDelete(id) {
+    console.log(id);
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then(result => {
+      if (result.isConfirmed) {
+        axiosSecure.delete(`/parcels/${id}`).then(res => {
+          console.log(res.data);
+
+          if (res.data.deletedCount) {
+            // refresh the data in the ui
+            refetch();
+
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Your parcel request has been deleted.',
+              icon: 'success',
+            });
+          }
+        });
+      }
+    });
+  }
+
   return (
     <div className='overflow-x-auto rounded-box border border-base-content/5 bg-base-100'>
       <table className='table'>
@@ -29,6 +66,8 @@ export default function MyParcelsPage() {
             <th>Receiver Name</th>
             <th>Receiver Email</th>
             <th>Cost</th>
+            <th>Payment Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -36,12 +75,26 @@ export default function MyParcelsPage() {
           {parcels.map((parcel, i) => (
             <tr key={parcel._id}>
               <th>{i + 1}</th>
-              <td>{parcel.percelType}</td>
+              <td>{parcel.parcelType}</td>
               <td>{parcel.parcelName}</td>
               <td>{parcel.parcelWeight}</td>
-              <td>{parcel.reciverName}</td>
+              <td>{parcel.receiverName}</td>
               <td>{parcel.receiverEmail}</td>
               <td>{parcel.cost}</td>
+              <td>N/A</td>
+              <td className='space-x-1'>
+                <button className='btn btn-square hover:bg-primary'>
+                  <HiMagnifyingGlass />
+                </button>
+                <button className='btn btn-square hover:bg-primary'>
+                  <FiEdit />
+                </button>
+                <button
+                  onClick={() => handleParcelDelete(parcel._id)}
+                  className='btn btn-square hover:bg-primary'>
+                  <FaRegTrashAlt />
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

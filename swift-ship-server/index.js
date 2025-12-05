@@ -1,6 +1,6 @@
 import cors from 'cors';
 import express from 'express';
-import { MongoClient, ServerApiVersion } from 'mongodb';
+import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -28,7 +28,9 @@ async function run() {
     const db = client.db('swiftShipDB');
     const parcelCollection = db.collection('parcels');
 
-    // parcel API
+    //! parcels API
+
+    // get parcels data
     app.get('/parcels', async (req, res) => {
       const query = {};
       const { email } = req.query;
@@ -40,6 +42,7 @@ async function run() {
       res.json(parcels);
     });
 
+    // create new parcel
     app.post('/parcels', async (req, res) => {
       const parcel = req.body;
 
@@ -47,6 +50,17 @@ async function run() {
       parcel.createdAt = new Date();
 
       const result = await parcelCollection.insertOne(parcel);
+
+      res.json(result);
+    });
+
+    // delete parcel
+    app.delete('/parcels/:id', async (req, res) => {
+      const { id } = req.params;
+
+      const result = await parcelCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
 
       res.json(result);
     });

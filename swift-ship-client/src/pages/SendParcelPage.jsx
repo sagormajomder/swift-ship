@@ -48,6 +48,8 @@ export default function SendParcelPage() {
       }
     }
 
+    data.cost = cost;
+
     // console.log('cost', cost);
 
     Swal.fire({
@@ -105,7 +107,7 @@ export default function SendParcelPage() {
                   value='document'
                   className='radio radio-success'
                   defaultChecked
-                  {...register('percelType', { required: true })}
+                  {...register('parcelType', { required: true })}
                 />
                 Document
               </label>
@@ -114,7 +116,7 @@ export default function SendParcelPage() {
                   type='radio'
                   value='non-document'
                   className='radio radio-success'
-                  {...register('percelType', { required: true })}
+                  {...register('parcelType', { required: true })}
                 />
                 Non-Document
               </label>
@@ -290,7 +292,7 @@ export default function SendParcelPage() {
                     id='pickup-intructions'
                     className='textarea w-full'
                     placeholder='Pickup Intruction'
-                    {...register('pickupIntructions')}></textarea>
+                    {...register('pickupInstructions')}></textarea>
                 </fieldset>
               </div>
               {/* Reciver Details */}
@@ -307,7 +309,7 @@ export default function SendParcelPage() {
                     id='receiver-name'
                     className='input w-full'
                     placeholder='Reciver Name'
-                    {...register('reciverName', { required: true })}
+                    {...register('receiverName', { required: true })}
                   />
 
                   {/* receiver email */}
@@ -431,7 +433,7 @@ export default function SendParcelPage() {
                     id='delivery-intructions'
                     className='textarea w-full'
                     placeholder='Delivery Intruction'
-                    {...register('deliveryIntructions')}></textarea>
+                    {...register('deliveryInstructions')}></textarea>
                 </fieldset>
               </div>
             </div>

@@ -43,6 +43,9 @@ async function run() {
     app.post('/parcels', async (req, res) => {
       const parcel = req.body;
 
+      // percel created time
+      parcel.createdAt = new Date();
+
       const result = await parcelCollection.insertOne(parcel);
 
       res.json(result);

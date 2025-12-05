@@ -30,6 +30,13 @@ export default function Navbar() {
       <li>
         <NavLink to=''>Contact</NavLink>
       </li>
+      {user && (
+        <>
+          <li>
+            <NavLink to='/dashboard/my-parcels'>My Parcels</NavLink>
+          </li>
+        </>
+      )}
     </>
   );
 

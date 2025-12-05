@@ -83,6 +83,7 @@ async function run() {
     });
 
     //! Payment Related APIs
+    // create payment session
     app.post('/create-checkout-session', async (req, res) => {
       const paymentInfo = req.body;
       const amount = parseInt(paymentInfo.cost) * 100;
@@ -91,9 +92,9 @@ async function run() {
         line_items: [
           {
             price_data: {
-              currency: 'USD',
+              currency: 'bdt',
               product_data: {
-                name: paymentInfo.parcelName,
+                name: `Please pay for ${paymentInfo.parcelName}`,
               },
               unit_amount: amount,
             },
@@ -105,7 +106,7 @@ async function run() {
         metadata: {
           parcelId: paymentInfo.parcelId,
         },
-        success_url: `${process.env.SITE_DOMAIN}/dashboard/payment-success`,
+        success_url: `${process.env.SITE_DOMAIN}/dashboard/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.SITE_DOMAIN}/dashboard/payment-cancelled`,
       });
 

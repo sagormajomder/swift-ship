@@ -2,9 +2,13 @@ import cors from 'cors';
 import express from 'express';
 import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 
+import Stripe from 'stripe';
+
 const app = express();
 const port = process.env.PORT || 5000;
 const uri = process.env.DATABASE_URI;
+const stripe = new Stripe(process.env.STRIPE_SECRET);
+// console.log(stripe);
 
 // middleware
 app.use(cors());
@@ -76,6 +80,36 @@ async function run() {
       });
 
       res.json(result);
+    });
+
+    //! Payment Related APIs
+    app.post('/create-checkout-session', async (req, res) => {
+      const paymentInfo = req.body;
+      const amount = parseInt(paymentInfo.cost) * 100;
+
+      const session = await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            price_data: {
+              currency: 'USD',
+              product_data: {
+                name: paymentInfo.parcelName,
+              },
+              unit_amount: amount,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: 'payment',
+        customer_email: paymentInfo.senderEmail,
+        metadata: {
+          parcelId: paymentInfo.parcelId,
+        },
+        success_url: `${process.env.SITE_DOMAIN}/dashboard/payment-success`,
+        cancel_url: `${process.env.SITE_DOMAIN}/dashboard/payment-cancelled`,
+      });
+
+      res.json({ url: session.url });
     });
   } finally {
   }

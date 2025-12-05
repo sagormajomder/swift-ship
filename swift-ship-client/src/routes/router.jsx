@@ -4,6 +4,7 @@ import RootLayout from '../layouts/RootLayout';
 import LoginPage from '../pages/authpages/LoginPage';
 import RegisterPage from '../pages/authpages/RegisterPage';
 import { default as BeARiderPage } from '../pages/BeARiderPage';
+import PaymentPage from '../pages/DashboardPages/PaymentPage';
 import DashboardLayout from './../layouts/DashboardLayout';
 import MyParcelsPage from './../pages/DashboardPages/MyParcelsPage';
 import HomePage from './../pages/homepage/HomePage';
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: 'my-parcels',
         Component: MyParcelsPage,
+      },
+      {
+        path: 'payment/:parcelId',
+        Component: PaymentPage,
       },
     ],
   },

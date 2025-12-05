@@ -16,6 +16,7 @@ export default function SendParcelPage() {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm();
 
   const senderRegion = useWatch({ control, name: 'senderRegion' });
@@ -66,6 +67,9 @@ export default function SendParcelPage() {
         axiosSecure.post('/parcels', data).then(res => {
           console.log('after saving parcel', res.data);
         });
+
+        reset();
+
         // Swal.fire({
         //     title: "Deleted!",
         //     text: "Your file has been deleted.",
@@ -104,7 +108,7 @@ export default function SendParcelPage() {
               <label className='label'>
                 <input
                   type='radio'
-                  value='document'
+                  value='Document'
                   className='radio radio-success'
                   defaultChecked
                   {...register('parcelType', { required: true })}
@@ -114,7 +118,7 @@ export default function SendParcelPage() {
               <label className='label'>
                 <input
                   type='radio'
-                  value='non-document'
+                  value='Non-Document'
                   className='radio radio-success'
                   {...register('parcelType', { required: true })}
                 />

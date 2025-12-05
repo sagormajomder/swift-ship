@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { FaRegTrashAlt } from 'react-icons/fa';
 import { FiEdit } from 'react-icons/fi';
 import { HiMagnifyingGlass } from 'react-icons/hi2';
+import { Link } from 'react-router';
 import Swal from 'sweetalert2';
 import { useAuth } from '../../contexts/AuthContext';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
@@ -66,7 +67,8 @@ export default function MyParcelsPage() {
             <th>Receiver Name</th>
             <th>Receiver Email</th>
             <th>Cost</th>
-            <th>Payment Status</th>
+            <th>Payment </th>
+            <th>Delivery Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -81,6 +83,17 @@ export default function MyParcelsPage() {
               <td>{parcel.receiverName}</td>
               <td>{parcel.receiverEmail}</td>
               <td>{parcel.cost}</td>
+              <td>
+                {parcel.paymentStatus === 'paid' ? (
+                  <span className='text-green-400'>Paid</span>
+                ) : (
+                  <Link to={`/dashboard/payment/${parcel._id}`}>
+                    <button className='btn btn-primary text-black btn-sm'>
+                      Pay
+                    </button>
+                  </Link>
+                )}
+              </td>
               <td>N/A</td>
               <td className='space-x-1'>
                 <button className='btn btn-square hover:bg-primary'>

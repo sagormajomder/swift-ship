@@ -30,16 +30,29 @@ async function run() {
 
     //! parcels API
 
-    // get parcels data
+    // get parcels data of specific user
     app.get('/parcels', async (req, res) => {
       const query = {};
       const { email } = req.query;
       if (email) {
         query.senderEmail = email;
       }
-      const parcels = await parcelCollection.find(query).toArray();
+
+      const options = { sort: { createdAt: -1 } };
+      const parcels = await parcelCollection.find(query, options).toArray();
 
       res.json(parcels);
+    });
+
+    // get specific parcel
+    app.get('/parcel/:id', async (req, res) => {
+      const { id } = req.params;
+
+      const parcel = await parcelCollection.findOne({ _id: new ObjectId(id) });
+
+      // console.log(parcel);
+
+      res.json(parcel);
     });
 
     // create new parcel

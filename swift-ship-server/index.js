@@ -93,6 +93,7 @@ async function run() {
     });
 
     //! Payment Related APIs
+
     // create payment session
     app.post('/create-checkout-session', async (req, res) => {
       const paymentInfo = req.body;
@@ -130,9 +131,26 @@ async function run() {
 
       const session = await stripe.checkout.sessions.retrieve(session_id);
 
-      const trackingId = generateTrackingId();
-
       // console.log(session);
+
+      const transactionId = session.payment_intent;
+
+      // Close guard if payment exist
+      const isPaymentExist = await paymentCollection.findOne({
+        transactionId,
+      });
+
+      console.log(isPaymentExist);
+
+      if (isPaymentExist) {
+        return res.json({
+          message: 'already exists',
+          transactionId,
+          trackingId: isPaymentExist.trackingId,
+        });
+      }
+
+      const trackingId = generateTrackingId();
 
       if (session.payment_status === 'paid') {
         const id = session.metadata.parcelId;
@@ -155,19 +173,20 @@ async function run() {
           customer_email: session.customer_email,
           parcelId: session.metadata.parcelId,
           parcelName: session.metadata.parcelName,
-          transactionId: session.payment_intent,
+          transactionId,
           paymentStatus: session.payment_status,
           paidAt: new Date(),
+          trackingId,
         };
 
         const paymentResult = await paymentCollection.insertOne(paymentData);
 
-        res.json({
+        return res.json({
           success: true,
           modifyParcel: updateResult,
           paymentInfo: paymentResult,
           trackingId,
-          transactionId: session.payment_intent,
+          transactionId,
         });
       }
 

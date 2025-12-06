@@ -30,6 +30,7 @@ const router = createBrowserRouter([
             <BeARiderPage />
           </PrivateRoute>
         ),
+        loader: async () => fetch('../warehouses.json'),
       },
       {
         path: 'send-parcel',

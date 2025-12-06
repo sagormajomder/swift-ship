@@ -11,6 +11,7 @@ const Rider = () => {
     handleSubmit,
     control,
     // formState: { errors }
+    reset,
   } = useForm();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();

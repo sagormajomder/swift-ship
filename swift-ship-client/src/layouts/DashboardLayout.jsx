@@ -1,4 +1,5 @@
 import { BsCreditCard } from 'react-icons/bs';
+import { FaMotorcycle } from 'react-icons/fa';
 import { LuTruck } from 'react-icons/lu';
 import { Link, NavLink, Outlet } from 'react-router';
 export default function DashboardLayout() {
@@ -84,6 +85,16 @@ export default function DashboardLayout() {
                 to='/dashboard/payment-history'>
                 <BsCreditCard className='text-xl ' />
                 <span className='is-drawer-close:hidden'>Payment History</span>
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
+                data-tip='Approve Riders'
+                to='/dashboard/approve-riders'>
+                <FaMotorcycle />
+                <span className='is-drawer-close:hidden'>Approve Riders</span>
               </NavLink>
             </li>
 

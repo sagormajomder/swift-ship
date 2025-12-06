@@ -4,6 +4,7 @@ import RootLayout from '../layouts/RootLayout';
 import LoginPage from '../pages/authpages/LoginPage';
 import RegisterPage from '../pages/authpages/RegisterPage';
 import { default as BeARiderPage } from '../pages/BeARiderPage';
+import ApproveRidersPage from '../pages/DashboardPages/ApproveRidersPage';
 import PaymentCancelPage from '../pages/DashboardPages/PaymentCancelPage';
 import PaymentHistoryPage from '../pages/DashboardPages/PaymentHistoryPage';
 import PaymentPage from '../pages/DashboardPages/PaymentPage';
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
       {
         path: 'payment-history',
         Component: PaymentHistoryPage,
+      },
+      {
+        path: 'approve-riders',
+        Component: ApproveRidersPage,
       },
     ],
   },

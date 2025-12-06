@@ -93,6 +93,20 @@ async function run() {
     });
 
     //! Payment Related APIs
+    // get payment data of specific user
+    app.get('/payments', async (req, res) => {
+      const { email } = req.query;
+
+      const query = {};
+
+      if (email) {
+        query.customer_email = email;
+      }
+
+      const payments = await paymentCollection.find(query).toArray();
+
+      res.json(payments);
+    });
 
     // create payment session
     app.post('/create-checkout-session', async (req, res) => {

@@ -5,6 +5,7 @@ import LoginPage from '../pages/authpages/LoginPage';
 import RegisterPage from '../pages/authpages/RegisterPage';
 import { default as BeARiderPage } from '../pages/BeARiderPage';
 import PaymentCancelPage from '../pages/DashboardPages/PaymentCancelPage';
+import PaymentHistoryPage from '../pages/DashboardPages/PaymentHistoryPage';
 import PaymentPage from '../pages/DashboardPages/PaymentPage';
 import PaymentSuccessPage from '../pages/DashboardPages/PaymentSuccessPage';
 import DashboardLayout from './../layouts/DashboardLayout';
@@ -79,6 +80,10 @@ const router = createBrowserRouter([
       {
         path: 'payment-cancelled',
         Component: PaymentCancelPage,
+      },
+      {
+        path: 'payment-history',
+        Component: PaymentHistoryPage,
       },
     ],
   },

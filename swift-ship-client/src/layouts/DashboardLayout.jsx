@@ -1,4 +1,4 @@
-import { CiDeliveryTruck } from 'react-icons/ci';
+import { BsCreditCard } from 'react-icons/bs';
 import { LuTruck } from 'react-icons/lu';
 import { Link, NavLink, Outlet } from 'react-router';
 export default function DashboardLayout() {
@@ -70,10 +70,20 @@ export default function DashboardLayout() {
             <li>
               <NavLink
                 className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
-                data-tip='MyParcels'
+                data-tip='My Parcels'
                 to='/dashboard/my-parcels'>
                 <LuTruck className='text-xl ' />
                 <span className='is-drawer-close:hidden'>My Parcels</span>
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
+                data-tip='Payment History'
+                to='/dashboard/payment-history'>
+                <BsCreditCard className='text-xl ' />
+                <span className='is-drawer-close:hidden'>Payment History</span>
               </NavLink>
             </li>
 

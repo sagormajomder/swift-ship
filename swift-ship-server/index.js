@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import admin from 'firebase-admin';
 import { MongoClient, ObjectId, ServerApiVersion } from 'mongodb';
 
 import crypto from 'node:crypto';
@@ -19,9 +20,38 @@ function generateTrackingId() {
   return `${prefix}-${date}-${random}`;
 }
 
+const decoded = Buffer.from(
+  process.env.FIREBASE_SERVICE_KEY,
+  'base64'
+).toString('utf8');
+
+const serviceAccount = JSON.parse(decoded);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
 // middleware
 app.use(cors());
 app.use(express.json());
+
+const verifyFBToken = async (req, res, next) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).send({ message: 'unauthorized access' });
+  }
+
+  try {
+    const idToken = token.split(' ')[1];
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    console.log('decoded in the token', decoded);
+    req.decoded_email = decoded.email;
+    next();
+  } catch (err) {
+    return res.status(401).send({ message: 'unauthorized access' });
+  }
+};
 
 const client = new MongoClient(uri, {
   serverApi: {
@@ -94,12 +124,17 @@ async function run() {
 
     //! Payment Related APIs
     // get payment data of specific user
-    app.get('/payments', async (req, res) => {
+    app.get('/payments', verifyFBToken, async (req, res) => {
       const { email } = req.query;
 
       const query = {};
 
       if (email) {
+        // check email address
+        if (email !== req.decoded_email) {
+          return res.status(403).json({ message: 'forbidden access' });
+        }
+
         query.customer_email = email;
       }
 

@@ -2,18 +2,34 @@ import toast from 'react-hot-toast';
 import { FcGoogle } from 'react-icons/fc';
 import { useLocation, useNavigate } from 'react-router';
 import { useAuth } from '../../contexts/AuthContext';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 
 export default function GoogleLogin({ title }) {
   const { googleSignIn, setIsLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const axiosSecure = useAxiosSecure();
 
   function handleGoogleLogin() {
     googleSignIn()
       .then(result => {
-        // console.log(result);
+        console.log(result);
+
+        toast.success('User login with Google is successful!');
         navigate(location.state ?? '/');
-        toast.success('User login with Google is successfull!');
+
+        // Create user in our DB
+        const userInfo = {
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL,
+        };
+        axiosSecure.post('/users', userInfo).then(res => {
+          console.log(res);
+          if (res.data.insertedId) {
+            console.log('user created in the database');
+          }
+        });
       })
       .catch(error => {
         const errorCode = error.code;
@@ -25,7 +41,7 @@ export default function GoogleLogin({ title }) {
         } else if (
           errorCode === 'auth/account-exists-with-different-credential'
         ) {
-          toast.error('Same email used with diffent social login');
+          toast.error('Same email used with different social login');
         } else if (errorCode === 'auth/user-disabled') {
           toast.error('This user account has been disabled.');
         } else if (errorCode === 'auth/too-many-requests') {
@@ -35,7 +51,7 @@ export default function GoogleLogin({ title }) {
         } else if (errorCode === 'auth/network-request-failed') {
           toast.error('Network error. Please check your connection.');
         } else if (errorCode === 'auth/popup-closed-by-user') {
-          toast.error('User closed the gooogle login popup.');
+          toast.error('User closed the google login popup.');
         } else {
           toast.error(errorMessage || 'An unexpected error occurred.');
         }

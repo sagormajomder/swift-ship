@@ -7,6 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import imageUploadIcon from '../../assets/image-upload-icon.png';
+import useAxiosSecure from '../../hooks/useAxiosSecure';
 import GoogleLogin from './GoogleLogin';
 
 export default function LoginPage() {
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const { registerUser, updateUserProfile, setIsLoading } = useAuth();
 
   const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure();
 
   const location = useLocation();
   // console.log('In register', location);
@@ -66,12 +68,26 @@ export default function LoginPage() {
             formData
           )
           .then(result => {
-            console.log(result);
-            console.log(result.data.data.url);
+            // console.log(result);
+            // console.log(result.data.data.url);
+            const photoURL = result.data.data.url;
+
+            // Create user in our DB
+            const userInfo = {
+              email,
+              displayName,
+              photoURL,
+            };
+            axiosSecure.post('/users', userInfo).then(res => {
+              if (res.data.insertedId) {
+                console.log('user created in the database');
+              }
+            });
+
             //3. Update User profile
             updateUserProfile({
               displayName,
-              photoURL: result.data.data.url,
+              photoURL,
             })
               .then(() => {
                 toast.success('User registration successful.');

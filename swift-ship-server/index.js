@@ -69,11 +69,27 @@ app.get('/', (req, res) => {
 async function run() {
   try {
     const db = client.db('swiftShipDB');
+    const userCollection = db.collection('users');
     const parcelCollection = db.collection('parcels');
     const paymentCollection = db.collection('payments');
 
-    //! parcels API
+    //! users APIs
+    app.post('/users', async (req, res) => {
+      const user = req.body;
+      user.role = 'user';
+      user.createdAt = new Date();
+      const email = user.email;
+      const userExists = await userCollection.findOne({ email });
 
+      if (userExists) {
+        return res.json({ message: 'user exists' });
+      }
+
+      const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+    //! parcels API
     // get parcels data of specific user
     app.get('/parcels', async (req, res) => {
       const query = {};
@@ -138,7 +154,10 @@ async function run() {
         query.customer_email = email;
       }
 
-      const payments = await paymentCollection.find(query).toArray();
+      const payments = await paymentCollection
+        .find(query)
+        .sort({ paidAt: -1 })
+        .toArray();
 
       res.json(payments);
     });

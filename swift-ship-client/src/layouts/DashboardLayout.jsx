@@ -1,8 +1,13 @@
 import { BsCreditCard } from 'react-icons/bs';
-import { FaMotorcycle } from 'react-icons/fa';
+import { FaMotorcycle, FaUsers } from 'react-icons/fa';
 import { LuTruck } from 'react-icons/lu';
+import { RiEBikeFill } from 'react-icons/ri';
 import { Link, NavLink, Outlet } from 'react-router';
+import Loader from '../components/Loader';
+import useRole from '../hooks/useRole';
 export default function DashboardLayout() {
+  const { role } = useRole();
+
   return (
     <div className='drawer lg:drawer-open'>
       <input id='my-drawer-4' type='checkbox' className='drawer-toggle' />
@@ -88,15 +93,44 @@ export default function DashboardLayout() {
               </NavLink>
             </li>
 
-            <li>
-              <NavLink
-                className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
-                data-tip='Approve Riders'
-                to='/dashboard/approve-riders'>
-                <FaMotorcycle />
-                <span className='is-drawer-close:hidden'>Approve Riders</span>
-              </NavLink>
-            </li>
+            {role === 'admin' && (
+              <>
+                <li>
+                  <NavLink
+                    className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
+                    data-tip='Approve Riders'
+                    to='/dashboard/approve-riders'>
+                    <FaMotorcycle className='text-xl ' />
+                    <span className='is-drawer-close:hidden'>
+                      Approve Riders
+                    </span>
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
+                    data-tip='Assign Riders'
+                    to='/dashboard/assign-riders'>
+                    <RiEBikeFill className='text-xl ' />
+                    <span className='is-drawer-close:hidden'>
+                      Assign Riders
+                    </span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
+                    data-tip='Users Management'
+                    to='/dashboard/users-management'>
+                    <FaUsers className='text-xl ' />
+                    <span className='is-drawer-close:hidden'>
+                      Users Management
+                    </span>
+                  </NavLink>
+                </li>
+              </>
+            )}
 
             {/* List item */}
             <li>

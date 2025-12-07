@@ -11,8 +11,10 @@ import PaymentPage from '../pages/DashboardPages/PaymentPage';
 import PaymentSuccessPage from '../pages/DashboardPages/PaymentSuccessPage';
 import DashboardLayout from './../layouts/DashboardLayout';
 import MyParcelsPage from './../pages/DashboardPages/MyParcelsPage';
+import UsersManagementPage from './../pages/DashboardPages/UsersManagementPage';
 import HomePage from './../pages/homepage/HomePage';
 import SendParcelPage from './../pages/SendParcelPage';
+import AdminRoute from './AdminRoute';
 import PrivateRoute from './PrivateRoute';
 
 const router = createBrowserRouter([
@@ -89,7 +91,19 @@ const router = createBrowserRouter([
       },
       {
         path: 'approve-riders',
-        Component: ApproveRidersPage,
+        element: (
+          <AdminRoute>
+            <ApproveRidersPage />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'users-management',
+        element: (
+          <AdminRoute>
+            <UsersManagementPage />
+          </AdminRoute>
+        ),
       },
     ],
   },

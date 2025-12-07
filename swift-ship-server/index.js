@@ -74,7 +74,44 @@ async function run() {
     const paymentCollection = db.collection('payments');
     const ridersCollection = db.collection('riders');
 
+    // middle admin before allowing admin activity
+    // must be used after verifyFBToken middleware
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded_email;
+      const query = { email };
+      const user = await userCollection.findOne(query);
+
+      if (!user || user.role !== 'admin') {
+        return res.status(403).send({ message: 'forbidden access' });
+      }
+
+      next();
+    };
+
     //! users APIs
+    // get users
+    app.get('/users', verifyFBToken, async (req, res) => {
+      const searchText = req.query.searchText;
+      const query = {};
+
+      if (searchText) {
+        // query.displayName = {$regex: searchText, $options: 'i'}
+        query.$or = [
+          { displayName: { $regex: searchText, $options: 'i' } },
+          { email: { $regex: searchText, $options: 'i' } },
+        ];
+      }
+
+      const result = await userCollection
+        .find(query)
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .toArray();
+
+      res.send(result);
+    });
+
+    // register user to the db
     app.post('/users', async (req, res) => {
       const user = req.body;
       user.role = 'user';
@@ -90,10 +127,40 @@ async function run() {
       res.send(result);
     });
 
+    // get specific user by id
+    app.get('/users/:id', async (req, res) => {});
+
+    // get user role
+    app.get('/users/:email/role', verifyFBToken, async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await userCollection.findOne(query);
+      res.send({ role: user?.role || 'user' });
+    });
+
+    // change user role to admin or vice-versa
+    app.patch(
+      '/users/:id/role',
+      verifyFBToken,
+      verifyAdmin,
+      async (req, res) => {
+        const id = req.params.id;
+        const roleInfo = req.body;
+        const query = { _id: new ObjectId(id) };
+        const updatedDoc = {
+          $set: {
+            role: roleInfo.role,
+          },
+        };
+        const result = await userCollection.updateOne(query, updatedDoc);
+        res.send(result);
+      }
+    );
+
     //! Riders API
 
     // get all riders or riders info by status
-    app.get('/riders', async (req, res) => {
+    app.get('/riders', verifyFBToken, verifyAdmin, async (req, res) => {
       const query = {};
       if (req.query.status) {
         query.status = req.query.status;
@@ -104,7 +171,7 @@ async function run() {
     });
 
     // register as rider
-    app.post('/riders', async (req, res) => {
+    app.post('/riders', verifyFBToken, async (req, res) => {
       const rider = req.body;
       rider.status = 'pending';
       rider.createdAt = new Date();
@@ -114,7 +181,7 @@ async function run() {
     });
 
     // change user to rider
-    app.patch('/riders/:id', verifyFBToken, async (req, res) => {
+    app.patch('/riders/:id', verifyFBToken, verifyAdmin, async (req, res) => {
       const status = req.body.status;
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -145,10 +212,14 @@ async function run() {
 
     //! parcels API
     // get parcels data of specific user
-    app.get('/parcels', async (req, res) => {
+    app.get('/parcels', verifyFBToken, async (req, res) => {
       const query = {};
       const { email } = req.query;
       if (email) {
+        // check email address
+        // if (email !== req.decoded_email) {
+        //   return res.status(403).json({ message: 'forbidden access' });
+        // }
         query.senderEmail = email;
       }
 

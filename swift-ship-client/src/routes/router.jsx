@@ -10,7 +10,10 @@ import PaymentCancelPage from '../pages/DashboardPages/PaymentCancelPage';
 import PaymentHistoryPage from '../pages/DashboardPages/PaymentHistoryPage';
 import PaymentPage from '../pages/DashboardPages/PaymentPage';
 import PaymentSuccessPage from '../pages/DashboardPages/PaymentSuccessPage';
+import RiderRoute from '../routes/RiderRoute';
 import DashboardLayout from './../layouts/DashboardLayout';
+import AssignedDeliveriesPage from './../pages/DashboardPages/AssignedDeliveriesPage';
+import CompletedDeliveriesPage from './../pages/DashboardPages/CompletedDeliveriesPage';
 import MyParcelsPage from './../pages/DashboardPages/MyParcelsPage';
 import UsersManagementPage from './../pages/DashboardPages/UsersManagementPage';
 import HomePage from './../pages/homepage/HomePage';
@@ -90,6 +93,33 @@ const router = createBrowserRouter([
         path: 'payment-history',
         Component: PaymentHistoryPage,
       },
+      // Rider only routes
+
+      {
+        path: 'assigned-deliveries',
+        element: (
+          <RiderRoute>
+            <AssignedDeliveriesPage />
+          </RiderRoute>
+        ),
+      },
+      {
+        path: 'completed-deliveries',
+        element: (
+          <RiderRoute>
+            <CompletedDeliveriesPage />
+          </RiderRoute>
+        ),
+      },
+      // Admin only routes
+      {
+        path: 'users-management',
+        element: (
+          <AdminRoute>
+            <UsersManagementPage />
+          </AdminRoute>
+        ),
+      },
       {
         path: 'approve-riders',
         element: (
@@ -103,14 +133,6 @@ const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <AssignRidersPage />
-          </AdminRoute>
-        ),
-      },
-      {
-        path: 'users-management',
-        element: (
-          <AdminRoute>
-            <UsersManagementPage />
           </AdminRoute>
         ),
       },

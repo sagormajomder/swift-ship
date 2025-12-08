@@ -5,6 +5,7 @@ import LoginPage from '../pages/authpages/LoginPage';
 import RegisterPage from '../pages/authpages/RegisterPage';
 import { default as BeARiderPage } from '../pages/BeARiderPage';
 import ApproveRidersPage from '../pages/DashboardPages/ApproveRidersPage';
+import AssignRidersPage from '../pages/DashboardPages/AssignRidersPage';
 import PaymentCancelPage from '../pages/DashboardPages/PaymentCancelPage';
 import PaymentHistoryPage from '../pages/DashboardPages/PaymentHistoryPage';
 import PaymentPage from '../pages/DashboardPages/PaymentPage';
@@ -94,6 +95,14 @@ const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <ApproveRidersPage />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'assign-riders',
+        element: (
+          <AdminRoute>
+            <AssignRidersPage />
           </AdminRoute>
         ),
       },

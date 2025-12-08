@@ -161,10 +161,22 @@ async function run() {
 
     // get all riders or riders info by status
     app.get('/riders', verifyFBToken, verifyAdmin, async (req, res) => {
+      const { status, district, workStatus } = req.query;
+
       const query = {};
-      if (req.query.status) {
-        query.status = req.query.status;
+
+      if (status) {
+        query.status = status;
       }
+
+      if (district) {
+        query.district = district;
+      }
+
+      if (workStatus) {
+        query.workStatus = workStatus;
+      }
+
       const result = await ridersCollection.find(query).toArray();
 
       res.send(result);
@@ -188,6 +200,7 @@ async function run() {
       const updatedDoc = {
         $set: {
           status: status,
+          workStatus: 'available',
         },
       };
 
@@ -214,13 +227,17 @@ async function run() {
     // get parcels data of specific user
     app.get('/parcels', verifyFBToken, async (req, res) => {
       const query = {};
-      const { email } = req.query;
+      const { email, deliveryStatus } = req.query;
       if (email) {
         // check email address
-        // if (email !== req.decoded_email) {
-        //   return res.status(403).json({ message: 'forbidden access' });
-        // }
+        if (email !== req.decoded_email) {
+          return res.status(403).json({ message: 'forbidden access' });
+        }
         query.senderEmail = email;
+      }
+
+      if (deliveryStatus) {
+        query.deliveryStatus = deliveryStatus;
       }
 
       const options = { sort: { createdAt: -1 } };
@@ -250,6 +267,38 @@ async function run() {
       const result = await parcelCollection.insertOne(parcel);
 
       res.json(result);
+    });
+
+    // update parcel with rider and delivery info
+    app.patch('/parcels/:id', async (req, res) => {
+      const { riderId, riderName, riderEmail } = req.body;
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const updatedDoc = {
+        $set: {
+          deliveryStatus: 'driver_assigned',
+          riderId: riderId,
+          riderName: riderName,
+          riderEmail: riderEmail,
+        },
+      };
+
+      const result = await parcelCollection.updateOne(query, updatedDoc);
+
+      // update rider information
+      const riderQuery = { _id: new ObjectId(riderId) };
+      const riderUpdatedDoc = {
+        $set: {
+          workStatus: 'in_delivery',
+        },
+      };
+      const riderResult = await ridersCollection.updateOne(
+        riderQuery,
+        riderUpdatedDoc
+      );
+
+      res.json(riderResult);
     });
 
     // delete parcel
@@ -333,7 +382,7 @@ async function run() {
         transactionId,
       });
 
-      console.log(isPaymentExist);
+      // console.log(isPaymentExist);
 
       if (isPaymentExist) {
         return res.json({
@@ -351,6 +400,7 @@ async function run() {
         const update = {
           $set: {
             paymentStatus: 'paid',
+            deliveryStatus: 'pending-pickup',
             trackingId,
           },
         };

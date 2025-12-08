@@ -68,6 +68,7 @@ export default function MyParcelsPage() {
             <th>Receiver Email</th>
             <th>Cost</th>
             <th>Payment </th>
+            <th>Tracking ID</th>
             <th>Delivery Status</th>
             <th>Actions</th>
           </tr>
@@ -94,7 +95,8 @@ export default function MyParcelsPage() {
                   </Link>
                 )}
               </td>
-              <td>N/A</td>
+              <td>{parcel.trackingId}</td>
+              <td>{parcel.deliveryStatus}</td>
               <td className='space-x-1'>
                 <button className='btn btn-square hover:bg-primary'>
                   <HiMagnifyingGlass />

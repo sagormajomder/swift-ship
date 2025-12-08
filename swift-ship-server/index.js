@@ -73,6 +73,7 @@ async function run() {
     const parcelCollection = db.collection('parcels');
     const paymentCollection = db.collection('payments');
     const ridersCollection = db.collection('riders');
+    const trackingsCollection = db.collection('trackings');
 
     // middle admin before allowing admin activity
     // must be used after verifyFBToken middleware
@@ -86,6 +87,17 @@ async function run() {
       }
 
       next();
+    };
+
+    const logTracking = async (trackingId, status) => {
+      const log = {
+        trackingId,
+        status,
+        details: status.split('_').join(' '),
+        createdAt: new Date(),
+      };
+      const result = await trackingsCollection.insertOne(log);
+      return result;
     };
 
     //! users APIs
@@ -246,6 +258,25 @@ async function run() {
       res.json(parcels);
     });
 
+    // get parcels for riders
+    app.get('/parcels/rider', async (req, res) => {
+      const { riderEmail, deliveryStatus } = req.query;
+      const query = {};
+
+      if (riderEmail) {
+        query.riderEmail = riderEmail;
+      }
+      if (deliveryStatus !== 'parcel_delivered') {
+        // query.deliveryStatus = {$in: ['driver_assigned', 'rider_arriving']}
+        query.deliveryStatus = { $nin: ['parcel_delivered'] };
+      } else {
+        query.deliveryStatus = deliveryStatus;
+      }
+
+      const result = await parcelCollection.find(query).toArray();
+      res.send(result);
+    });
+
     // get specific parcel
     app.get('/parcel/:id', async (req, res) => {
       const { id } = req.params;
@@ -299,6 +330,39 @@ async function run() {
       );
 
       res.json(riderResult);
+    });
+
+    // update parcel delivery status by the rider
+    app.patch('/parcels/:id/status', async (req, res) => {
+      const { deliveryStatus, riderId, trackingId } = req.body;
+
+      const query = { _id: new ObjectId(req.params.id) };
+
+      const updatedDoc = {
+        $set: {
+          deliveryStatus: deliveryStatus,
+        },
+      };
+
+      if (deliveryStatus === 'parcel_delivered') {
+        // update rider information
+        const riderQuery = { _id: new ObjectId(riderId) };
+        const riderUpdatedDoc = {
+          $set: {
+            workStatus: 'available',
+          },
+        };
+        const riderResult = await ridersCollection.updateOne(
+          riderQuery,
+          riderUpdatedDoc
+        );
+      }
+
+      const result = await parcelCollection.updateOne(query, updatedDoc);
+      // log tracking
+      logTracking(trackingId, deliveryStatus);
+
+      res.send(result);
     });
 
     // delete parcel

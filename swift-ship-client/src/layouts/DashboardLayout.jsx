@@ -1,9 +1,9 @@
 import { BsCreditCard } from 'react-icons/bs';
-import { FaMotorcycle, FaUsers } from 'react-icons/fa';
+import { FaMotorcycle, FaTasks, FaUsers } from 'react-icons/fa';
 import { LuTruck } from 'react-icons/lu';
 import { RiEBikeFill } from 'react-icons/ri';
+import { SiGoogletasks } from 'react-icons/si';
 import { Link, NavLink, Outlet } from 'react-router';
-import Loader from '../components/Loader';
 import useRole from '../hooks/useRole';
 export default function DashboardLayout() {
   const { role } = useRole();
@@ -73,6 +73,7 @@ export default function DashboardLayout() {
             </li>
 
             {/* Our Dashboard Links */}
+            {/* User Dashboard Link */}
             <li>
               <NavLink
                 className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
@@ -92,6 +93,36 @@ export default function DashboardLayout() {
                 <span className='is-drawer-close:hidden'>Payment History</span>
               </NavLink>
             </li>
+
+            {/* Rider only links */}
+            {role === 'rider' && (
+              <>
+                <li>
+                  <NavLink
+                    className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
+                    data-tip='Assigned Deliveries'
+                    to='/dashboard/assigned-deliveries'>
+                    <FaTasks />
+                    <span className='is-drawer-close:hidden'>
+                      Assigned Deliveries
+                    </span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
+                    data-tip='Completed Deliveries'
+                    to='/dashboard/completed-deliveries'>
+                    <SiGoogletasks />
+                    <span className='is-drawer-close:hidden'>
+                      Completed Deliveries
+                    </span>
+                  </NavLink>
+                </li>
+              </>
+            )}
+
+            {/* Admin only links */}
 
             {role === 'admin' && (
               <>

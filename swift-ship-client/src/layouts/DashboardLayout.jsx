@@ -4,6 +4,7 @@ import { LuTruck } from 'react-icons/lu';
 import { RiEBikeFill } from 'react-icons/ri';
 import { SiGoogletasks } from 'react-icons/si';
 import { Link, NavLink, Outlet } from 'react-router';
+import logoImg from '../assets/logo.png';
 import useRole from '../hooks/useRole';
 export default function DashboardLayout() {
   const { role } = useRole();
@@ -51,8 +52,13 @@ export default function DashboardLayout() {
           <ul className='menu w-full grow'>
             {/* List item */}
             <li>
+              <Link to='/'>
+                <img src={logoImg} alt='' />
+              </Link>
+            </li>
+            <li>
               <Link
-                to='/'
+                to='/dashboard'
                 className='is-drawer-close:tooltip is-drawer-close:tooltip-right'
                 data-tip='Homepage'>
                 {/* Home icon */}

@@ -194,6 +194,56 @@ async function run() {
       res.send(result);
     });
 
+    app.get('/riders/delivery-per-day', async (req, res) => {
+      const email = req.query.email;
+      // aggregate on parcel
+      const pipeline = [
+        {
+          $match: {
+            riderEmail: email,
+            deliveryStatus: 'parcel_delivered',
+          },
+        },
+        {
+          $lookup: {
+            from: 'trackings',
+            localField: 'trackingId',
+            foreignField: 'trackingId',
+            as: 'parcel_trackings',
+          },
+        },
+        {
+          $unwind: '$parcel_trackings',
+        },
+        {
+          $match: {
+            'parcel_trackings.status': 'parcel_delivered',
+          },
+        },
+        {
+          // convert timestamp to YYYY-MM-DD string
+          $addFields: {
+            deliveryDay: {
+              $dateToString: {
+                format: '%Y-%m-%d',
+                date: '$parcel_trackings.createdAt',
+              },
+            },
+          },
+        },
+        {
+          // group by date
+          $group: {
+            _id: '$deliveryDay',
+            deliveredCount: { $sum: 1 },
+          },
+        },
+      ];
+
+      const result = await parcelCollection.aggregate(pipeline).toArray();
+      res.send(result);
+    });
+
     // register as rider
     app.post('/riders', verifyFBToken, async (req, res) => {
       const rider = req.body;

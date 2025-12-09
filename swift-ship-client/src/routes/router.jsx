@@ -10,6 +10,7 @@ import PaymentCancelPage from '../pages/DashboardPages/PaymentCancelPage';
 import PaymentHistoryPage from '../pages/DashboardPages/PaymentHistoryPage';
 import PaymentPage from '../pages/DashboardPages/PaymentPage';
 import PaymentSuccessPage from '../pages/DashboardPages/PaymentSuccessPage';
+import ParcelTrackPage from '../pages/ParcelTrackPage';
 import RiderRoute from '../routes/RiderRoute';
 import DashboardLayout from './../layouts/DashboardLayout';
 import AssignedDeliveriesPage from './../pages/DashboardPages/AssignedDeliveriesPage';
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
         ),
 
         loader: async () => fetch('../warehouses.json'),
+      },
+      {
+        path: 'parcel-track/:trackingId',
+        Component: ParcelTrackPage,
       },
     ],
   },

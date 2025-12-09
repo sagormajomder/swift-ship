@@ -18,7 +18,7 @@ export default function PaymentPage() {
 
   // console.log(parcel)
 
-  const { senderEmail, _id, parcelName, cost } = parcel;
+  const { senderEmail, _id, parcelName, cost, trackingId } = parcel;
 
   if (isPending) return <Loader />;
 
@@ -28,6 +28,7 @@ export default function PaymentPage() {
       cost,
       parcelName,
       senderEmail,
+      trackingId,
     };
 
     axiosSecure.post(`/create-checkout-session`, paymentInfo).then(result => {

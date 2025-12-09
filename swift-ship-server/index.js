@@ -302,7 +302,7 @@ async function run() {
 
     // update parcel with rider and delivery info
     app.patch('/parcels/:id', async (req, res) => {
-      const { riderId, riderName, riderEmail } = req.body;
+      const { riderId, riderName, riderEmail, trackingId } = req.body;
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
 
@@ -328,6 +328,8 @@ async function run() {
         riderQuery,
         riderUpdatedDoc
       );
+
+      logTracking(trackingId, 'driver_assigned');
 
       res.json(riderResult);
     });
@@ -423,6 +425,7 @@ async function run() {
         metadata: {
           parcelId: paymentInfo.parcelId,
           parcelName: paymentInfo.parcelName,
+          trackingId: paymentInfo.trackingId,
         },
         success_url: `${process.env.SITE_DOMAIN}/dashboard/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.SITE_DOMAIN}/dashboard/payment-cancelled`,
@@ -456,7 +459,8 @@ async function run() {
         });
       }
 
-      const trackingId = generateTrackingId();
+      // const trackingId = generateTrackingId();
+      const trackingId = session.metadata.trackingId;
 
       if (session.payment_status === 'paid') {
         const id = session.metadata.parcelId;
@@ -465,7 +469,6 @@ async function run() {
           $set: {
             paymentStatus: 'paid',
             deliveryStatus: 'pending-pickup',
-            trackingId,
           },
         };
 
@@ -488,6 +491,8 @@ async function run() {
 
         const paymentResult = await paymentCollection.insertOne(paymentData);
 
+        logTracking(trackingId, 'payment_paid');
+
         return res.json({
           success: true,
           modifyParcel: updateResult,
@@ -498,6 +503,14 @@ async function run() {
       }
 
       res.json({ success: false });
+    });
+
+    // tracking related apis
+    app.get('/trackings/:trackingId/logs', async (req, res) => {
+      const trackingId = req.params.trackingId;
+      const query = { trackingId };
+      const result = await trackingsCollection.find(query).toArray();
+      res.send(result);
     });
   } finally {
   }

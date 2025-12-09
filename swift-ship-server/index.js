@@ -288,6 +288,26 @@ async function run() {
       res.json(parcel);
     });
 
+    app.get('/parcels/delivery-status/stats', async (req, res) => {
+      const pipeline = [
+        {
+          $group: {
+            _id: '$deliveryStatus',
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            status: '$_id',
+            count: 1,
+            // _id: 0
+          },
+        },
+      ];
+      const result = await parcelCollection.aggregate(pipeline).toArray();
+      res.send(result);
+    });
+
     // create new parcel
     app.post('/parcels', async (req, res) => {
       const parcel = req.body;
